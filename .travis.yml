@@ -1,0 +1,26 @@
+services:
+- docker
+
+env:
+  global:
+    DOCKER_EMAIL:
+      secure: JZoOqK3pFUvxXshIo99TRZ+DSwqUATvKBFoYOkGYXDD4r8Bcd4WqXo++lADMdQEvdHMogPEGdzGYZkMaffnzTGSD+80pHCWGbW9sI11iLWx7KFBKZPxpKWHKeWe/db5yC+EVVnpaPKTQM/9pLCqUHfNARaqp1QurzQrRRt0JSB/ktN4et+t7LAJkfgpazgudUG7xT3r0xe2epAvbsJkuqnOO2m0FS+O9TOpRDxZOkndUxZwk1CLEqkNR/EjuOYdsOxzKR2stI6Fifua2XAb9veMSvCFt1YmiV3XdUpD82uV78l/mWjKtPxUwIS027K+pOLa71H62gttN+lODOvwriXg13SbwZ095EJrKF/oN0trTwFs3lSiUsn1SMjZiHgCQ+HBF04q6O832LdzmkrSznsIBS/GWDwB5YLHbRZj8Sb6+WxOOiwmtNr5mET3i8CEgitxOpHwRZActhWIV6YB6Ch7seCfZ06aHiJ2io2ii/4oDBLFpfNo5LDm6BMzizniowv25T1lEBHiKC9hJgvS5XRwukMiQYF7td4CE2U7GX3U1lzuvPq0gc6BOMDaSruzAjwvNyrh060V2povriTgT//5nxORGGLqUiXQWCfy+zOHiquKh/aW07fU6gqqqOLgTV5Ymx/LYzC+/EkjrIWEutEj1xJ1q1ZZSVjHQ890dekM=
+    DOCKER_USER:
+      secure: akqGETpHz4hVGM7AzZVLjmZpxbBDRH2ayzOgyRsRVIS0KTyzdT0tuWpgcRPIjv0XEwzVzEr2n0mz4CwZNjAliuT2IqKNg3RPYTp82fvBns/8JCUryw9WwaJg+y1VxdyXSA1dqDCb6HWOBJYeluKfBJAnJE0zmSN6FIIyENgixjDnTnn1ebElA6iswa2U896KVUDlw5ZH3z4C4qwhINF+S3OUBb1uhXQ50hS1+wTM3hlGCO7sbKryDfJgbUeRt2oQ92+LE4KywIYvY6o28Qo4U8WeLL37MmdicvadJiwUkyIIS6ortHtHt+ppKZsLLWIOnoIgrI4ll8NQYIkAoNlE1V8NdCM6+tmmH8vZuiEQZaZwgPgNDmIYeVpZTQrmz7ZFXHmCPK3PIvlloY/0o8xC8OGJc2CrzERi9ZlZieu6cc8ZmlYE1VNY7q+Qq1wFM2MfFuERenhM+ZtdSGNLB7c/UZ4sEPuaA1IC1UZG2e8Ff94mh4ImBM52+KCVeaY31zBTsEZ8lbGD4aPSTz5ld5ah5gknRwxEgp9LWArZZ8lnA3yXRxOBt5i6FF3uYm79LX1pm/UVGepW1nUuhFMR1Dpjdc/+tINt1Ou+DW6O1+uvu14YG2DoOzuDTfqa5cQSwTwhd7qzHZk/RLMiXM12Hc2XPRKJHYIWgciIKySuiWdk3r0=
+    DOCKER_PASS:
+      secure: t1ESwp687dmZhwk/9yzJdPAsdQOF1NWJv0lVWsRH7LSYzEiyPBKqV1MXceb7GgKFia52zCcGOOpA7vKE1FcplpoKlg1aezxI/1lmwni2naLmjBZI6Ry/InC9QCKz+V4XWNphIgxqRPQq67FRzmKqWHyGw/cB9gXuDLUWMs1TgHU9gw2rNU6hYMio0EgHupySZ/7vc7f/LQxK7kWRwF/sxPbZCWJkTfxlfnKbLE+hoslRKeQ8IQzDPnWmswnhZ4oRSQGjfmXI38CNhyWhKrstujsVWlE0ht/8JLB3F63TnZy3wetGXBYeg1quEDbEPmJ65pnJJKFV7bv0s9+YIuvc4+ohFfYm42GFuWmuCDiRwcbYocNjr05rhHsgv1aheOSGLrNzO8X19LfecaiT2jdUHdf5j79tbiVz15DePuUsKtCWeiVGrATTM0uY4Dl/jAAxSfMPtxaF/C9XEfPwiFBV/wccWb+qN58c+g00MtEH4Wz/lSK/Rr/MISbMESWQcx2dtK9tTeT1PeuppLm6So4AoDaZi2ptKHcj0ReFSlbBGcZZmc1MsYMSxNX92t1n1T9kj4EVUDq0OgOYjINoxMxqbEXns2UUBtvrt6vdRXaVJqw4TWWWg5sGp1ySN91dp0FqNw1g6+HV16YuVgMy4AtJ9yL30esX3sxVpTnTfPNO94w=
+
+script:
+  - docker build --pull --cache-from "vuepress" --tag "vuepress" .
+
+after_script:
+  - docker images
+
+before_deploy:
+  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+  - docker tag "vuepress" "vuepress:latest"
+deploy:
+  provider: script
+  script: docker tag "vuepress" "vuepress:${TRAVIS_TAG}" && docker push "vuepress:latest" && docker push "vuepress:${TRAVIS_TAG}"
+  on:
+    tags: true

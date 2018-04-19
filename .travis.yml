@@ -16,11 +16,11 @@ script:
 after_script:
   - docker images
 
-before_deploy:
-  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-  - docker tag "vuepress" "vuepress:latest"
-deploy:
-  provider: script
-  script: docker tag "vuepress" "vuepress:${TRAVIS_TAG}" && docker push "vuepress:latest" && docker push "vuepress:${TRAVIS_TAG}"
-  on:
-    tags: true
+after_success:
+  - if [[ -z "$TRAVIS_TAG" ]]; then
+      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
+      docker tag "vuepress" "vuepress:latest" ;
+      docker tag "vuepress" "vuepress:${TRAVIS_TAG}" ;
+      docker push "vuepress:latest" ;
+      docker push "vuepress:${TRAVIS_TAG}" ;
+    fi

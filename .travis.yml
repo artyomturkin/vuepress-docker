@@ -19,6 +19,8 @@ after_script:
 after_success:
   - echo "$TRAVIS_TAG"
   - if [[ -z "$TRAVIS_TAG" ]]; then
+      echo "Skipping push" ;
+    else
       docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
       docker tag "vuepress" "vuepress:latest" ;
       docker tag "vuepress" "vuepress:${TRAVIS_TAG}" ;

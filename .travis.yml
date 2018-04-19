@@ -17,6 +17,7 @@ after_script:
   - docker images
 
 after_success:
+  - echo "$TRAVIS_TAG"
   - if [[ -z "$TRAVIS_TAG" ]]; then
       docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
       docker tag "vuepress" "vuepress:latest" ;

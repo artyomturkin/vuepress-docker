@@ -1,2 +1,2 @@
 FROM node:alpine
-RUN npm install -g vuepress
+RUN yarn global add vuepress@1.1.0
